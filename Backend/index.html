@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تعلم العربية - Learn Saudi Arabic with AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .card h3 {
+            margin-bottom: 15px;
+        }
+        
+        .button {
+            width: 100%;
+            padding: 12px;
+            margin: 5px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.2s;
+        }
+        
+        .level-button {
+            border: 1px solid #ddd;
+            background: white;
+            text-transform: capitalize;
+        }
+        
+        .level-button.active {
+            border: 2px solid #667eea;
+            background: #f0f4ff;
+            font-weight: bold;
+        }
+        
+        .lesson-button {
+            border: 1px solid #ddd;
+            background: white;
+            text-align: left;
+        }
+        
+        .lesson-button.active {
+            border: 2px solid #667eea;
+            background: #f0f4ff;
+            font-weight: bold;
+        }
+        
+        .chat-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+        
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-header h2 {
+            font-size: 1.5em;
+        }
+        
+        .chat-header p {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        .clear-button {
+            padding: 10px 20px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+        }
+        
+        .message.user {
+            justify-content: flex-end;
+        }
+        
+        .message-content {
+            max-width: 70%;
+            padding: 15px;
+            border-radius: 15px;
+            line-height: 1.6;
+            font-size: 1.05em;
+        }
+        
+        .message.user .message-content {
+            background: #667eea;
+            color: white;
+        }
+        
+        .message.assistant .message-content {
+            background: #f0f0f0;
+            color: black;
+        }
+        
+        .typing {
+            padding: 15px;
+            border-radius: 15px;
+            background: #f0f0f0;
+            color: #999;
+        }
+        
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .message-input {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 1em;
+            outline: none;
+        }
+        
+        .send-button {
+            padding: 15px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+        }
+        
+        .send-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .input-hint {
+            margin-top: 10px;
+            font-size: 0.85em;
+            color: #999;
+            text-align: center;
+        }
+        
+        .setup-box {
+            margin-top: 30px;
+            padding: 20px;
+            background: #fff3cd;
+            border-radius: 10px;
+            border: 1px solid #ffc107;
+        }
+        
+        .setup-box h3 {
+            margin-bottom: 15px;
+        }
+        
+        .setup-box ol {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        
+        .setup-box code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🇸🇦 تعلم العربية</h1>
+            <p>Learn Saudi Arabic with AI - Built by Mohammed</p>
+        </div>
+        
+        <div class="main-grid">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Student Name -->
+                <div class="card">
+                    <h3>👤 Your Name</h3>
+                    <input 
+                        type="text" 
+                        id="student-name-input"
+                        placeholder="Enter your name..."
+                        style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1em; margin-bottom: 10px;"
+                    />
+                    <button 
+                        onclick="saveStudentName()"
+                        style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; font-weight: bold;"
+                    >
+                        Save Name
+                    </button>
+                    <p id="name-saved-msg" style="margin-top: 10px; font-size: 0.9em; color: #667eea; display: none;">✓ Name saved!</p>
+                </div>
+                
+                <!-- Level Selection -->
+                <div class="card">
+                    <h3>📊 Level</h3>
+                    <button class="button level-button active" data-level="beginner">Beginner</button>
+                    <button class="button level-button" data-level="intermediate">Intermediate</button>
+                    <button class="button level-button" data-level="advanced">Advanced</button>
+                </div>
+                
+                <!-- Lesson Topics -->
+                <div class="card">
+                    <h3>📚 Lessons</h3>
+                    <button class="button lesson-button active" data-topic="greetings">👋 التحيات (Greetings)</button>
+                    <button class="button lesson-button" data-topic="shopping">🛒 التسوق (Shopping)</button>
+                    <button class="button lesson-button" data-topic="family">👨‍👩‍👧‍👦 العائلة (Family)</button>
+                    <button class="button lesson-button" data-topic="food">🍽️ الطعام (Food)</button>
+                    <button class="button lesson-button" data-topic="directions">🗺️ الاتجاهات (Directions)</button>
+                    <button class="button lesson-button" data-topic="conversation">💬 محادثة حرة (Free Conversation)</button>
+                </div>
+            </div>
+            
+            <!-- Chat Area -->
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div>
+                        <h2 id="current-topic">👋 التحيات (Greetings)</h2>
+                        <p id="current-level">Level: beginner</p>
+                    </div>
+                    <button class="clear-button" onclick="clearChat()">🔄 Clear Chat</button>
+                </div>
+                
+                <div class="messages" id="messages">
+                    <div class="empty-state">
+                        <h3>مرحباً! (Welcome!)</h3>
+                        <p>Start a conversation to practice Arabic. Type "hello" or "مرحبا" to begin!</p>
+                        <p style="font-size: 0.9em; margin-top: 20px;">
+                            💡 Tip: The AI will teach you Saudi dialect phrases and correct your mistakes gently.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <div class="input-group">
+                        <input 
+                            type="text" 
+                            id="message-input" 
+                            class="message-input" 
+                            placeholder="Type your message in Arabic or English..."
+                            onkeypress="handleKeyPress(event)"
+                        />
+                        <button class="send-button" onclick="sendMessage()">Send</button>
+                    </div>
+                    <p class="input-hint">
+                        Press Enter to send • The AI tutor will respond in a mix of Arabic and English
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Setup Instructions -->
+        <div class="setup-box">
+            <h3>⚙️ Setup Instructions</h3>
+            <ol>
+                <li>Make sure the Flask backend server is running on port 5000</li>
+                <li>If deployed, update <code>BACKEND_URL</code> in the code to your server URL</li>
+                <li>Open this HTML file in your browser</li>
+                <li>Start chatting with your AI Arabic tutor!</li>
+            </ol>
+            <p style="margin-top: 10px; font-size: 0.9em;">
+                <strong>Note:</strong> See the README.md file for detailed setup instructions for the backend server
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const BACKEND_URL = 'https://arabic-tutor-backend-6stj.onrender.com'; // Your live backend
+        
+        // State
+        let messages = [];
+        let currentLevel = 'beginner';
+        let currentTopic = 'greetings';
+        let isLoading = false;
+        let studentName = localStorage.getItem('studentName') || '';
+        
+        const lessonTopics = {
+            greetings: { title: '👋 التحيات (Greetings)', emoji: '👋' },
+            shopping: { title: '🛒 التسوق (Shopping)', emoji: '🛒' },
+            family: { title: '👨‍👩‍👧‍👦 العائلة (Family)', emoji: '👨‍👩‍👧‍👦' },
+            food: { title: '🍽️ الطعام (Food)', emoji: '🍽️' },
+            directions: { title: '🗺️ الاتجاهات (Directions)', emoji: '🗺️' },
+            conversation: { title: '💬 محادثة حرة (Free Conversation)', emoji: '💬' }
+        };
+        
+        function getSystemPrompt() {
+            const prompts = {
+                beginner: `You are an Arabic language tutor specializing in Saudi dialect. The student is a beginner${studentName ? ` named ${studentName}` : ''}.
+
+ABSOLUTE FORMATTING REQUIREMENTS - YOU MUST FOLLOW THESE:
+1. ALWAYS put each Arabic phrase on its own line
+2. ALWAYS add a blank line between different phrases
+3. ALWAYS use this exact format:
+
+Arabic word (transliteration)
+One sentence explanation
+
+4. Teach ONLY 2-3 phrases per message, never more
+5. After teaching, ask ONE simple question
+
+Current topic: ${lessonTopics[currentTopic].title}
+
+CORRECT EXAMPLE:
+
+مرحباً! (Marhaban!) Hello!
+
+Here are 3 essential greetings:
+
+السلام عليكم (As-salamu alaykum)
+This means "Peace be upon you" - the most common greeting.
+
+وعليكم السلام (Wa alaykum as-salam)
+This is the response, meaning "And peace be upon you too."
+
+كيف حالك؟ (Kayf halak?)
+This means "How are you?" when speaking to a male.
+
+Try greeting me! Type one of these phrases.
+
+TEACHING RULES:
+- Use simple, clear English
+- Be warm and encouraging
+- Give practical examples
+- Focus on what Saudis actually say
+- Keep it conversational and fun`,
+                
+                intermediate: `You are an Arabic language tutor specializing in Saudi dialect. The student is intermediate level${studentName ? ` and their name is ${studentName}` : ''}.
+
+FORMATTING: Use clear line breaks, simple numbering, and keep explanations concise.
+
+Your role:
+- Have natural conversations in Saudi Arabic
+- Mix Arabic and English explanations as needed
+- Introduce idiomatic expressions and colloquialisms
+- Correct mistakes and explain grammar patterns
+- Challenge the student with follow-up questions
+- Share cultural insights about Saudi Arabia
+
+Current topic: ${lessonTopics[currentTopic].title}`,
+                
+                advanced: `You are an Arabic language tutor specializing in Saudi dialect. The student is advanced${studentName ? ` and their name is ${studentName}` : ''}.
+
+Your role:
+- Conduct conversations primarily in Arabic
+- Use sophisticated vocabulary and expressions
+- Discuss nuanced cultural and social topics
+- Provide detailed grammar explanations when asked
+- Help refine pronunciation and fluency
+- Introduce regional variations within Saudi dialects
+
+Current topic: ${lessonTopics[currentTopic].title}`
+            };
+            
+            return prompts[currentLevel];
+        }
+        
+        async function sendMessage() {
+            const input = document.getElementById('message-input');
+            const messageText = input.value.trim();
+            
+            if (!messageText || isLoading) return;
+            
+            // Get or ask for user email
+            let userEmail = localStorage.getItem('userEmail');
+            if (!userEmail) {
+                userEmail = prompt("Enter your email to start learning (for tracking your free messages):");
+                if (userEmail && userEmail.includes('@')) {
+                    localStorage.setItem('userEmail', userEmail);
+                } else {
+                    alert('Please enter a valid email address');
+                    return;
+                }
+            }
+            
+            // Add user message
+            messages.push({ role: 'user', content: messageText });
+            displayMessage('user', messageText);
+            input.value = '';
+            
+            // Show loading
+            isLoading = true;
+            showTyping();
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        messages: messages,
+                        system: getSystemPrompt(),
+                        max_tokens: 1024,
+                        user_email: userEmail
+                    })
+                });
+                
+                // Check for 429 (rate limit) first
+                if (response.status === 429) {
+                    const data = await response.json();
+                    hideTyping();
+                    
+                    // Create upgrade button
+                    const upgradeMessage = document.createElement('div');
+                    upgradeMessage.className = 'message assistant';
+                    upgradeMessage.innerHTML = `
+                        <div class="message-content" style="max-width: 80%;">
+                            <p style="margin-bottom: 15px;">${data.error}</p>
+                            <p style="margin-bottom: 15px;">💳 <strong>Upgrade to Premium for just £9.99/month</strong> and get unlimited messages!</p>
+                            <button onclick="upgradeNow()" style="
+                                width: 100%;
+                                padding: 15px;
+                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                color: white;
+                                border: none;
+                                border-radius: 10px;
+                                font-size: 1.1em;
+                                font-weight: bold;
+                                cursor: pointer;
+                                margin-top: 10px;
+                            ">
+                                🚀 Upgrade to Premium Now
+                            </button>
+                        </div>
+                    `;
+                    
+                    document.getElementById('messages').appendChild(upgradeMessage);
+                    document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+                    
+                    isLoading = false;
+                    return;
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Check if upgrade is required
+                if (data.upgrade_required) {
+                    hideTyping();
+                    displayMessage('assistant', `${data.error}\n\n💳 Upgrade to Premium for just £9.99/month and get unlimited messages!\n\nContact: mohammed@example.com to upgrade.`);
+                    isLoading = false;
+                    return;
+                }
+                
+                if (!data.success) {
+                    throw new Error(data.error || 'Unknown error');
+                }
+                
+                const assistantMessage = data.message;
+                
+                messages.push({ role: 'assistant', content: assistantMessage });
+                hideTyping();
+                displayMessage('assistant', assistantMessage);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                hideTyping();
+                displayMessage('assistant', 'عذراً، حدث خطأ (Sorry, an error occurred). Please make sure the backend server is running.');
+            } finally {
+                isLoading = false;
+            }
+        }
+        
+        function displayMessage(role, content) {
+            const messagesDiv = document.getElementById('messages');
+            
+            // Remove empty state if it exists
+            const emptyState = messagesDiv.querySelector('.empty-state');
+            if (emptyState) {
+                emptyState.remove();
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            messageDiv.innerHTML = `<div class="message-content">${content}</div>`;
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        function showTyping() {
+            const messagesDiv = document.getElementById('messages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message assistant';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = '<div class="typing">Typing...</div>';
+            messagesDiv.appendChild(typingDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        function hideTyping() {
+            const typingDiv = document.getElementById('typing-indicator');
+            if (typingDiv) {
+                typingDiv.remove();
+            }
+        }
+        
+        function clearChat() {
+            messages = [];
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = `
+                <div class="empty-state">
+                    <h3>مرحباً! (Welcome!)</h3>
+                    <p>Start a conversation to practice Arabic. Type "hello" or "مرحبا" to begin!</p>
+                    <p style="font-size: 0.9em; margin-top: 20px;">
+                        💡 Tip: The AI will teach you Saudi dialect phrases and correct your mistakes gently.
+                    </p>
+                </div>
+            `;
+        }
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        async function upgradeNow() {
+            // Get user email
+            const userEmail = localStorage.getItem('userEmail');
+            
+            if (!userEmail) {
+                alert('Please enter your email first');
+                return;
+            }
+            
+            try {
+                // Show loading
+                const button = event.target;
+                button.textContent = '⏳ Creating checkout session...';
+                button.disabled = true;
+                
+                // Call backend to create Stripe checkout session
+                const response = await fetch(`${BACKEND_URL}/api/create-checkout`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: userEmail,
+                        plan: 'premium'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.checkout_url) {
+                    // Redirect to Stripe checkout
+                    window.location.href = data.checkout_url;
+                } else {
+                    alert('Error creating checkout session. Please try again or contact support.');
+                    button.textContent = '🚀 Upgrade to Premium Now';
+                    button.disabled = false;
+                }
+            } catch (error) {
+                console.error('Upgrade error:', error);
+                alert('Error: ' + error.message);
+                button.textContent = '🚀 Upgrade to Premium Now';
+                button.disabled = false;
+            }
+        }
+        
+        function saveStudentName() {
+            const nameInput = document.getElementById('student-name-input');
+            const name = nameInput.value.trim();
+            
+            if (name) {
+                studentName = name;
+                localStorage.setItem('studentName', name);
+                
+                // Show confirmation message
+                const msgElement = document.getElementById('name-saved-msg');
+                msgElement.style.display = 'block';
+                setTimeout(() => {
+                    msgElement.style.display = 'none';
+                }, 2000);
+            }
+        }
+        
+        // Load saved name on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            if (studentName) {
+                document.getElementById('student-name-input').value = studentName;
+            }
+        });
+        
+        // Level selection
+        document.querySelectorAll('.level-button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.level-button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentLevel = this.dataset.level;
+                document.getElementById('current-level').textContent = `Level: ${currentLevel}`;
+            });
+        });
+        
+        // Lesson selection
+        document.querySelectorAll('.lesson-button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.lesson-button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentTopic = this.dataset.topic;
+                document.getElementById('current-topic').textContent = lessonTopics[currentTopic].title;
+                clearChat();
+            });
+        });
+    </script>
+</body>
+</html>
