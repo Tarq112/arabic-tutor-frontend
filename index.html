@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- PWA Manifest -->
+<link rel="manifest" href="/manifest.json">
+
+<!-- iOS specific meta tags -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Arabic Tutor">
+
+<!-- Theme color for mobile browsers -->
+<meta name="theme-color" content="#667eea">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تعلم العربية - Learn Saudi Arabic with AI</title>
@@ -694,5 +704,25 @@ Current topic: ${lessonTopics[currentTopic].title}`
             });
         });
     </script>
+    <script>
+// Register service worker for offline functionality
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('Service Worker registered'))
+      .catch(err => console.log('Service Worker registration failed'));
+  });
+}
+
+// Show install prompt on mobile
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  
+  // You can show a custom install button here if you want
+  console.log('PWA install prompt ready');
+});
+</script>
 </body>
 </html>
