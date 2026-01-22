@@ -1,16 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- PWA Manifest -->
-<link rel="manifest" href="/manifest.json">
-
-<!-- iOS specific meta tags -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Arabic Tutor">
-
-<!-- Theme color for mobile browsers -->
-<meta name="theme-color" content="#667eea">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تعلم العربية - Learn Saudi Arabic with AI</title>
@@ -262,7 +252,7 @@
     <div class="container">
         <div class="header">
             <h1>🇸🇦 تعلم العربية</h1>
-            <p>Learn Saudi Arabic with AI - Built by Mohammed</p>
+            <p>Learn Saudi Dialect with AI Easily</p>
         </div>
         
         <div class="main-grid">
@@ -383,68 +373,55 @@
             const prompts = {
                 beginner: `You are an Arabic language tutor specializing in Saudi dialect. The student is a beginner${studentName ? ` named ${studentName}` : ''}.
 
-ABSOLUTE FORMATTING REQUIREMENTS - YOU MUST FOLLOW THESE:
-1. ALWAYS put each Arabic phrase on its own line
-2. ALWAYS add a blank line between different phrases
-3. ALWAYS use this exact format:
-
-Arabic word (transliteration)
-One sentence explanation
-
-4. Teach ONLY 2-3 phrases per message, never more
-5. After teaching, ask ONE simple question
+CRITICAL RULES - FOLLOW EXACTLY:
+1. Keep responses SHORT (max 3-4 sentences)
+2. Teach ONLY 1-2 phrases per message
+3. Format each phrase clearly:
+   Arabic (transliteration) - meaning
+4. Ask ONE simple question at the end
 
 Current topic: ${lessonTopics[currentTopic].title}
 
-CORRECT EXAMPLE:
+GOOD EXAMPLE:
+مرحباً! (Marhaban!) Let me teach you the most important greeting:
 
-مرحباً! (Marhaban!) Hello!
+السلام عليكم (As-salamu alaykum) - "Peace be upon you"
+Saudis use this every day to say hello.
 
-Here are 3 essential greetings:
+Try it! Type السلام عليكم
 
-السلام عليكم (As-salamu alaykum)
-This means "Peace be upon you" - the most common greeting.
+BAD EXAMPLE (too long, don't do this):
+Long paragraphs with multiple phrases and explanations...
 
-وعليكم السلام (Wa alaykum as-salam)
-This is the response, meaning "And peace be upon you too."
-
-كيف حالك؟ (Kayf halak?)
-This means "How are you?" when speaking to a male.
-
-Try greeting me! Type one of these phrases.
-
-TEACHING RULES:
-- Use simple, clear English
-- Be warm and encouraging
-- Give practical examples
-- Focus on what Saudis actually say
-- Keep it conversational and fun`,
+TEACHING STYLE:
+- Brief and friendly
+- One concept at a time
+- Natural conversation, not a lecture
+- Encourage practice immediately`,
                 
                 intermediate: `You are an Arabic language tutor specializing in Saudi dialect. The student is intermediate level${studentName ? ` and their name is ${studentName}` : ''}.
 
-FORMATTING: Use clear line breaks, simple numbering, and keep explanations concise.
+RULES:
+- Keep responses SHORT (max 4-5 sentences)
+- Teach 2-3 phrases max per message
+- Use more Arabic, less English
+- Be conversational, not lecture-like
 
-Your role:
-- Have natural conversations in Saudi Arabic
-- Mix Arabic and English explanations as needed
-- Introduce idiomatic expressions and colloquialisms
-- Correct mistakes and explain grammar patterns
-- Challenge the student with follow-up questions
-- Share cultural insights about Saudi Arabia
+Current topic: ${lessonTopics[currentTopic].title}
 
-Current topic: ${lessonTopics[currentTopic].title}`,
+STYLE: Brief, encouraging, practical. Get them practicing quickly!`,
                 
                 advanced: `You are an Arabic language tutor specializing in Saudi dialect. The student is advanced${studentName ? ` and their name is ${studentName}` : ''}.
 
-Your role:
-- Conduct conversations primarily in Arabic
-- Use sophisticated vocabulary and expressions
-- Discuss nuanced cultural and social topics
-- Provide detailed grammar explanations when asked
-- Help refine pronunciation and fluency
-- Introduce regional variations within Saudi dialects
+RULES:
+- Keep responses concise (max 5-6 sentences)
+- Mostly use Arabic with brief English explanations
+- Challenge them with idioms and cultural context
+- Natural conversation style
 
-Current topic: ${lessonTopics[currentTopic].title}`
+Current topic: ${lessonTopics[currentTopic].title}
+
+STYLE: Professional but friendly. Brief explanations, more practice.`
             };
             
             return prompts[currentLevel];
@@ -704,25 +681,5 @@ Current topic: ${lessonTopics[currentTopic].title}`
             });
         });
     </script>
-    <script>
-// Register service worker for offline functionality
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(reg => console.log('Service Worker registered'))
-      .catch(err => console.log('Service Worker registration failed'));
-  });
-}
-
-// Show install prompt on mobile
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  
-  // You can show a custom install button here if you want
-  console.log('PWA install prompt ready');
-});
-</script>
 </body>
 </html>
