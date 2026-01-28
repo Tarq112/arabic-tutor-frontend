@@ -218,33 +218,63 @@
             text-align: center;
         }
         
-        .setup-box {
-            margin-top: 30px;
-            padding: 20px;
-            background: #fff3cd;
-            border-radius: 10px;
-            border: 1px solid #ffc107;
-        }
-        
-        .setup-box h3 {
-            margin-bottom: 15px;
-        }
-        
-        .setup-box ol {
-            margin-left: 20px;
-            line-height: 1.8;
-        }
-        
-        .setup-box code {
-            background: #f4f4f4;
-            padding: 2px 6px;
-            border-radius: 3px;
-        }
-        
         @media (max-width: 768px) {
             .main-grid {
                 grid-template-columns: 1fr;
             }
+        }
+        
+        /* Voice/Speech Styles */
+        .arabic-text {
+            position: relative;
+            display: inline;
+        }
+        
+        .speak-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            padding: 2px 5px;
+            margin-left: 3px;
+            opacity: 0.6;
+            transition: opacity 0.2s, transform 0.1s;
+            vertical-align: middle;
+        }
+        
+        .speak-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        .speak-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Footer Styles */
+        .footer {
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .footer p {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -311,7 +341,7 @@
                         <h3>مرحباً! (Welcome!)</h3>
                         <p>Start a conversation to practice Arabic. Type "hello" or "مرحبا" to begin!</p>
                         <p style="font-size: 0.9em; margin-top: 20px;">
-                            💡 Tip: The AI will teach you Saudi dialect phrases and correct your mistakes gently.
+                            💡 Tip: The AI will teach you Saudi dialect phrases and correct your mistakes gently. Click 🔊 to hear pronunciation!
                         </p>
                     </div>
                 </div>
@@ -328,15 +358,86 @@
                         <button class="send-button" onclick="sendMessage()">Send</button>
                     </div>
                     <p class="input-hint">
-                        Press Enter to send • The AI tutor will respond in a mix of Arabic and English
+                        Press Enter to send • Click 🔊 to hear Arabic pronunciation
                     </p>
                 </div>
             </div>
         </div>
         
+        <!-- Footer -->
+        <div class="footer">
+            <p>
+                Having issues or questions? 📧 <br>
+                Email us at <a href="mohammed@smartreception.london">mohammed@smartreception.london</a>
+            </p>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #999;">
+                Built by Smart Reception • Learn Saudi Arabic with AI
+            </p>
+        </div>
+        
     <script>
+        // Text-to-Speech functionality using browser's built-in speech synthesis
+        class ArabicSpeech {
+            constructor() {
+                this.synth = window.speechSynthesis;
+                this.arabicVoice = null;
+                this.loadVoices();
+            }
+            
+            loadVoices() {
+                const voices = this.synth.getVoices();
+                
+                // Try to find an Arabic voice
+                this.arabicVoice = voices.find(voice => 
+                    voice.lang.startsWith('ar-') || voice.lang === 'ar'
+                );
+                
+                // If no Arabic voice, use default
+                if (!this.arabicVoice && voices.length > 0) {
+                    this.arabicVoice = voices[0];
+                }
+                
+                // Voices load asynchronously
+                if (this.synth.onvoiceschanged !== undefined) {
+                    this.synth.onvoiceschanged = () => {
+                        const newVoices = this.synth.getVoices();
+                        this.arabicVoice = newVoices.find(voice => 
+                            voice.lang.startsWith('ar-') || voice.lang === 'ar'
+                        ) || newVoices[0];
+                    };
+                }
+            }
+            
+            speak(text) {
+                // Stop any ongoing speech
+                this.synth.cancel();
+                
+                // Create utterance
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                // Set voice and properties
+                if (this.arabicVoice) {
+                    utterance.voice = this.arabicVoice;
+                }
+                utterance.lang = 'ar-SA'; // Saudi Arabic
+                utterance.rate = 0.85; // Slower for learning
+                utterance.pitch = 1;
+                utterance.volume = 1;
+                
+                // Speak
+                this.synth.speak(utterance);
+            }
+            
+            stop() {
+                this.synth.cancel();
+            }
+        }
+        
+        // Initialize speech engine
+        const speech = new ArabicSpeech();
+        
         // Configuration
-        const BACKEND_URL = 'https://arabic-tutor-backend-6stj.onrender.com'; // Your live backend
+        const BACKEND_URL = 'https://arabic-tutor-backend-6stj.onrender.com';
         
         // State
         let messages = [];
@@ -374,9 +475,6 @@ GOOD EXAMPLE:
 Saudis use this every day to say hello.
 
 Try it! Type السلام عليكم
-
-BAD EXAMPLE (too long, don't do this):
-Long paragraphs with multiple phrases and explanations...
 
 TEACHING STYLE:
 - Brief and friendly
@@ -495,14 +593,6 @@ STYLE: Professional but friendly. Brief explanations, more practice.`
                 
                 const data = await response.json();
                 
-                // Check if upgrade is required
-                if (data.upgrade_required) {
-                    hideTyping();
-                    displayMessage('assistant', `${data.error}\n\n💳 Upgrade to Premium for just £9.99/month and get unlimited messages!\n\nContact: mohammed@example.com to upgrade.`);
-                    isLoading = false;
-                    return;
-                }
-                
                 if (!data.success) {
                     throw new Error(data.error || 'Unknown error');
                 }
@@ -533,6 +623,21 @@ STYLE: Professional but friendly. Brief explanations, more practice.`
             
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${role}`;
+            
+            // For assistant messages, add speaker icons to Arabic text
+            if (role === 'assistant') {
+                // Find Arabic text patterns and add speaker buttons
+                // Match Arabic characters (including spaces within Arabic text)
+                content = content.replace(
+                    /([\u0600-\u06FF]+(?:\s+[\u0600-\u06FF]+)*)/g,
+                    (match) => {
+                        // Clean the text for the onclick attribute
+                        const cleanText = match.replace(/'/g, "\\'");
+                        return `<span class="arabic-text">${match}<button class="speak-btn" onclick="speech.speak('${cleanText}')" title="Click to hear pronunciation">🔊</button></span>`;
+                    }
+                );
+            }
+            
             messageDiv.innerHTML = `<div class="message-content">${content}</div>`;
             
             messagesDiv.appendChild(messageDiv);
@@ -564,7 +669,7 @@ STYLE: Professional but friendly. Brief explanations, more practice.`
                     <h3>مرحباً! (Welcome!)</h3>
                     <p>Start a conversation to practice Arabic. Type "hello" or "مرحبا" to begin!</p>
                     <p style="font-size: 0.9em; margin-top: 20px;">
-                        💡 Tip: The AI will teach you Saudi dialect phrases and correct your mistakes gently.
+                        💡 Tip: The AI will teach you Saudi dialect phrases and correct your mistakes gently. Click 🔊 to hear pronunciation!
                     </p>
                 </div>
             `;
@@ -577,7 +682,6 @@ STYLE: Professional but friendly. Brief explanations, more practice.`
         }
         
         async function upgradeNow() {
-            // Get user email
             const userEmail = localStorage.getItem('userEmail');
             
             if (!userEmail) {
@@ -586,12 +690,10 @@ STYLE: Professional but friendly. Brief explanations, more practice.`
             }
             
             try {
-                // Show loading
                 const button = event.target;
                 button.textContent = '⏳ Creating checkout session...';
                 button.disabled = true;
                 
-                // Call backend to create Stripe checkout session
                 const response = await fetch(`${BACKEND_URL}/api/create-checkout`, {
                     method: 'POST',
                     headers: {
@@ -606,7 +708,6 @@ STYLE: Professional but friendly. Brief explanations, more practice.`
                 const data = await response.json();
                 
                 if (data.checkout_url) {
-                    // Redirect to Stripe checkout
                     window.location.href = data.checkout_url;
                 } else {
                     alert('Error creating checkout session. Please try again or contact support.');
@@ -629,7 +730,6 @@ STYLE: Professional but friendly. Brief explanations, more practice.`
                 studentName = name;
                 localStorage.setItem('studentName', name);
                 
-                // Show confirmation message
                 const msgElement = document.getElementById('name-saved-msg');
                 msgElement.style.display = 'block';
                 setTimeout(() => {
